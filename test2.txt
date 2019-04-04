@@ -1,0 +1,17 @@
+7
+SWITCH		1	S1			110		196
+SWITCH		2	S2			113		311
+SWITCH		3	S1			127		426
+AND2		4	&			361		253
+AND2		5	AND			362		367
+XOR2		6	CF			542		294
+LED		7	LED			761		275
+Connections
+1		4		1
+2		4		2
+2		5		1
+3		5		2
+4		6		1
+5		6		2
+6		7		1
+-1

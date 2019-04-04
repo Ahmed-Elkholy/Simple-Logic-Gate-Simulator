@@ -1,0 +1,110 @@
+oid ApplicationManager::Load(ifstream & Inputfile)
+{
+	int count = 0;
+	Inputfile >> count;
+	for (int i = 0; i < count; i++)
+	{
+		int type1;
+		/*ComponentType type;
+		Inputfile >> type1;
+		type =(ComponentType) type1;
+		*/
+		string type;
+		Inputfile >> type;
+		int ID;
+		string label;
+		int Cx;
+		int Cy;
+		Inputfile >> ID;
+		Inputfile >> label;
+		Inputfile >> Cx;
+		Inputfile >> Cy;
+		GraphicsInfo GInfo;
+		GInfo.x1 = Cx - UI.AND2_Height / 2;
+		GInfo.x2 = Cx + UI.AND2_Height / 2;
+		GInfo.y1 = Cy - UI.AND2_Width / 2;
+		GInfo.y2 = Cy + UI.AND2_Width / 2;
+		Component *pc;
+		switch (type)
+		{
+		case "AND2":
+			pc = new AND2(GInfo, AND2_FANOUT);
+			break;
+
+		case tLED:
+			pc = new LED(GInfo, AND2_FANOUT);
+			break;
+		case tSWITCH:
+			pc = new SWITCH(GInfo, AND2_FANOUT);
+			break;
+		case tAND3:
+			pc = new AND3(GInfo, AND2_FANOUT);
+			break;
+		case tBUFF:
+		    pc = new BUFF(GInfo, AND2_FANOUT);
+			break;
+		case tNOT:
+			pc = new NOT(GInfo, AND2_FANOUT);
+			break;
+		case tNAND2:
+			pc = new NAND2(GInfo, AND2_FANOUT);
+			break;
+		case tNOR2:
+			pc = new NOR2(GInfo, AND2_FANOUT);
+			break;
+		case tNOR3:
+			pc = new NOR3(GInfo, AND2_FANOUT);
+			break;
+		case tOR2:
+			pc = new OR2(GInfo, AND2_FANOUT);
+			break;
+		case tXNOR2:
+			pc = new XNOR2(GInfo, AND2_FANOUT);
+			break;
+		case tXOR2:
+			pc = new XOR2(GInfo, AND2_FANOUT);
+			break;
+		case tXOR3:
+			pc = new XOR3(GInfo, AND2_FANOUT);
+			break;
+		}
+		pc->SetID(ID);
+		pc->SetLabel(label);
+		AddComponent(pc);
+	}
+	string ff;
+	Inputfile >> ff;
+	int SourceID;
+	int DestID;
+	int inputnum;
+	Inputfile >> SourceID;
+	Inputfile >> DestID;
+	Inputfile >> inputnum;
+
+	while (SourceID!=-1)
+	{
+		GraphicsInfo gfxConn;
+		Component * pSource = findComponent(SourceID);
+		GraphicsInfo gfxSource = pSource->getgrap();
+        gfxConn.x1 = gfxSource.x1 + UI.AND2_Width - 3;
+		gfxConn.y1 = gfxSource.y1 + 24;
+		Component * pDst = findComponent(DestID);
+		GraphicsInfo gfxDest = pDst->GetinputPinCoordinates(inputnum);
+		gfxConn.x2 = gfxDest.x1;
+		gfxConn.y2 = gfxDest.y1;
+
+
+		OutputPin *pinSource = pSource->getoutpin();
+		InputPin *pinDest = pDst->getinpin(inputnum);
+		Connection *pconn = new Connection(gfxConn, pinSource, pinDest);
+		pinDest->SetConnection(pconn);
+		pinDest->SetConnectionStat(true);
+		pinSource->ConnectTo(pconn);
+		pSource->SetNextComp(pconn);
+		pconn->SetNextComp(pDst);
+		AddComponent(pconn);
+		Inputfile >> SourceID;
+		Inputfile >> DestID;
+		Inputfile >> inputnum;
+	}
+}
